@@ -1,0 +1,106 @@
+/* Custom styles for Task Manager */
+
+:root {
+    --primary-blue: #0077b6;
+    --secondary-teal: #00b4d8;
+    --light-teal: #90e0ef;
+    --dark-blue: #03045e;
+    --bg-light: #caf0f8;
+    --accent-teal: #48cae4;
+}
+
+body {
+    background: linear-gradient(135deg, #caf0f8 0%, #ade8f4 100%);
+    min-height: 100vh;
+}
+
+/* Header styling */
+header {
+    background: linear-gradient(135deg, var(--dark-blue) 0%, var(--primary-blue) 100%) !important;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    color: #ffffff !important;
+}
+
+/* Card improvements */
+.card {
+    border: none;
+    box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.075);
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15);
+}
+
+/* Form improvements */
+.form-label {
+    font-weight: 500;
+    color: var(--dark-blue);
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--accent-teal);
+    box-shadow: 0 0 0 0.2rem rgba(0, 180, 216, 0.25);
+}
+
+/* Color input styling */
+.form-control-color {
+    height: 45px;
+    cursor: pointer;
+}
+
+/* Button styling */
+#btnSave {
+    padding: 12px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-teal) 100%);
+    border: none;
+}
+
+#btnSave:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 119, 182, 0.4);
+    background: linear-gradient(135deg, var(--dark-blue) 0%, var(--primary-blue) 100%);
+}
+
+/* Task list section */
+#taskList {
+    min-height: 200px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .row {
+        margin: 0;
+    }
+    
+    header h1 {
+        font-size: 1.5rem;
+    }
+}
+
+/* Animation for new tasks */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.task-item {
+    animation: slideIn 0.3s ease-out;
+}
