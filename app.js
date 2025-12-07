@@ -104,11 +104,14 @@ function displayTask(task){
     const badgeColor = statusColors[task.status] || 'secondary';
     
     const data = `
-    <div class="card mb-3 task-item" style="border-left: 4px solid ${task.color}">
+    <div class="card mb-3 task-item" data-id="${task.id}" style="border-left: 4px solid ${task.color}">
         <div class="card-body p-3">
             <div class="d-flex justify-content-between align-items-start mb-2">
                 <h5 class="card-title mb-0 fw-bold">${task.title}</h5>
-                <span class="badge bg-${badgeColor} text-capitalize">${task.status}</span>
+                <div>
+                    <span class="badge bg-${badgeColor} text-capitalize me-2">${task.status}</span>
+                    <button class="btn btn-sm btn-danger btn-delete" title="Delete task">&times;</button>
+                </div>
             </div>
             <p class="card-text text-muted mb-3">${task.description}</p>
             <div class="d-flex justify-content-between align-items-center">
@@ -119,11 +122,12 @@ function displayTask(task){
                     $${parseFloat(task.budget).toFixed(2)}
                 </span>
             </div>
+            <small class="text-muted d-block mt-2">ID: ${task.id}</small>
         </div>
     </div>
     `;
     
-    $("#taskList").append(data);
+    $("#taskContainer").append(data);
 }
 
 function saveTask(){
@@ -149,20 +153,17 @@ function saveTask(){
         contentType: "application/json",
         success: function(response) {
             console.log("Task saved successfully!", response);
+            // Display task from server response (includes the ID)
+            displayTask(response);
+            // Show success message
+            showSuccess();
+            // Clear form
+            clearForm();
         },
         error: function(error) {
             console.error("Error saving task:", error);
         }
     });
-    
-    // Display task in the list
-    displayTask(data);
-    
-    // Show success message
-    showSuccess();
-    
-    // Clear form
-    clearForm();
 }
 
 function getTasks() {
@@ -174,13 +175,15 @@ function getTasks() {
     success: function(tasks) {
       console.log("Tasks retrieved:", tasks);
       
-      // Clear the "no tasks" message before displaying tasks
-      if (tasks.length > 0) {
-        $('#taskList').empty();
-      }
+      // Filter to only show tasks where name matches "Robert"
+      const myTasks = tasks.filter(function(task) {
+        return task.name === "Robert";
+      });
       
-      // Display each task in the list
-      tasks.forEach(function(task) {
+      console.log("Filtered tasks (Robert):", myTasks);
+      
+      // Display each filtered task in the list
+      myTasks.forEach(function(task) {
         displayTask(task);
       });
     },
@@ -205,8 +208,92 @@ $.ajax({
 });
 }
 
+function deleteTask() {
+    console.log("Deleting task...");
+    
+    // 1. Get the button that was clicked
+    const btn = $(this);
+    
+    // 2. Find the parent div with class "task-item"
+    const taskElement = btn.closest('.task-item');
+    
+    // 3. Get the unique ID from the HTML
+    const id = taskElement.data('id');
+    console.log("Requesting delete for ID: " + id);
+    
+    // 4. Send DELETE request to API
+    $.ajax({
+        type: "DELETE",
+        url: API_URL + "/" + id,
+        success: function() {
+            // 5. Animate removal from screen
+            taskElement.fadeOut(500, function() {
+                // Remove taskElement from DOM completely
+                $(this).remove();
+            });
+        },
+        error: function(error) {
+            console.error("Error deleting task:", error);
+            alert("Error deleting task");
+        }
+    });
+}
+
+function filterTasks(status) {
+    if (status === "All") {
+        // Show all tasks
+        $('.task-item').show();
+    } else {
+        // Hide all tasks first
+        $('.task-item').hide();
+        
+        // Show only those that match
+        $('.task-item').each(function() {
+            // Get text from .badge (status label) inside this task
+            const taskStatus = $(this).find('.badge').first().text().trim().toLowerCase();
+            
+            // If taskStatus matches the filter status
+            if (taskStatus === status.toLowerCase()) {
+                $(this).show();
+            }
+        });
+    }
+    
+    // Update active button state
+    $('.btn-group .btn').removeClass('active');
+}
+
 function init(){
     $('#btnSave').click(saveTask);
+    
+    // Bind delete button click (using event delegation for dynamically added elements)
+    $('#taskList').on('click', '.btn-delete', deleteTask);
+    
+    // Filter button click handlers
+    $('#btnAll').click(function() {
+        filterTasks("All");
+        $(this).addClass('active');
+    });
+    
+    $('#btnDone').click(function() {
+        filterTasks("done");
+        $(this).addClass('active');
+    });
+    
+    $('#btnTodo').click(function() {
+        filterTasks("new");
+        $(this).addClass('active');
+    });
+    
+    $('#btnInProgress').click(function() {
+        filterTasks("in progress");
+        $(this).addClass('active');
+    });
+    
+    $('#btnBlocked').click(function() {
+        filterTasks("blocked");
+        $(this).addClass('active');
+    });
     
     // Load tasks from server on page load
     getTasks();

@@ -25,7 +25,16 @@
                         <h5 class="mb-0">Task List</h5>
                     </div>
                     <div class="card-body" id="taskList">
-                        <p class="text-muted">No tasks yet. Create your first task!</p>
+                        <!-- Filter Buttons -->
+                        <div class="btn-group mb-3 flex-wrap" role="group">
+                            <button type="button" class="btn btn-outline-primary active" id="btnAll">All</button>
+                            <button type="button" class="btn btn-outline-info" id="btnTodo">New</button>
+                            <button type="button" class="btn btn-outline-warning" id="btnInProgress">In Progress</button>
+                            <button type="button" class="btn btn-outline-danger" id="btnBlocked">Blocked</button>
+                            <button type="button" class="btn btn-outline-success" id="btnDone">Done</button>
+                        </div>
+                        <div id="taskContainer">
+                        </div>
                     </div>
                 </div>
             </section>
